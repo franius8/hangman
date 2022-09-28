@@ -22,3 +22,19 @@ class Computer
     end
   end
 end
+
+class Display
+    def initial_message(guess_number)
+        puts 'Welcome to Hangman!'
+        puts "The computer will now draw a word between 5 and 12 characters."
+        puts "You will have #{guess_number} guesses."
+    end
+
+    def print_word(guessed_letters)
+        puts "The word is currently: #{guessed_letters.join(' ')}"
+    end
+
+    def play_again_message
+        puts 'The game ended. Type Y to play again, anthing else to exit.'
+    end
+end
