@@ -1,8 +1,11 @@
 class Hangman
   def initialize
-    @computer = Computer.new
-    @word = @computer.draw_word
-    puts @word
+    @guess_number = 5
+    
+    @computer = Computer.new(@guess_number)
+
+    @computer.play_game  
+    
   end
 end
 
