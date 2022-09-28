@@ -12,7 +12,7 @@ class Hangman
   end
 end
 
-# Class handling all backend operations
+# Class handling all backend operations during the game
 class Computer
   def initialize(guess_number)
     @guess_number = guess_number
@@ -31,8 +31,7 @@ class Computer
   end
 
   def prepare_variables
-    create_wordlist
-    draw_word
+    @word = WordDrawer.new.draw_word
     create_guessed_list
   end
 
@@ -43,11 +42,6 @@ class Computer
       return
     end
     check_guess(guess)
-  end
-
-  def draw_word
-    create_wordlist if @filtered_word_list.nil?
-    @word = @filtered_word_list.sample
   end
 
   def create_wordlist
@@ -120,6 +114,20 @@ class Player
   def collect_guess
     @display.collect_guess_message
     gets.chomp
+  end
+end
+
+# Class to draw word for the game
+class WordDrawer
+  def initialize
+    word_list = File.read('google-10000-english-no-swears.txt').split("\n")
+    @filtered_word_list = word_list.each_with_object([]) do |word, filtered_list|
+      filtered_list << word if word.length.between?(5, 12)
+    end
+  end
+
+  def draw_word
+    @filtered_word_list.sample
   end
 end
 
