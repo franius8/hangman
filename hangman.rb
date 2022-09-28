@@ -42,8 +42,8 @@ class Computer
       return if guess_valid?(guess)
 
       @display.invalid_guess_message
-      check_guess(guess)
     end
+    check_guess(guess)
   end
 
   def draw_word
