@@ -1,3 +1,11 @@
+class Hangman
+  def initialize
+    @computer = Computer.new
+    @word = @computer.draw_word
+    puts @word
+  end
+end
+
 class Computer
   def draw_word
     create_wordlist if @filtered_word_list.nil?
