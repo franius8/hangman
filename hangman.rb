@@ -37,8 +37,10 @@ class Computer
 
   def process_guess
     guess = ''
-    until guess_valid?
-     guess = @player.collect_guess   
+    loop do
+     guess = @player.collect_guess
+     return if guess_valid?(guess)
+     @display.invalid_guess_message
     end
   end
   
