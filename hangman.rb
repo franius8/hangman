@@ -10,16 +10,54 @@ class Hangman
 end
 
 class Computer
-  def draw_word
+    def initialize(guess_number)
+    @guess_number = guess_number
+    @display = Display.new
+    @player = Player.new(@display)
+    end
+  
+    def play_game
+    loop do
+        prepare_variables
+        @display.initial_message(@guess_number)
+        until @guessed_letters.any?('_')
+            process_guess
+        end  
+        return unless @player.play_again?
+    end
+  end
+
+  def prepare_variables
+    create_wordlist
+    draw_word
+    create_guessed_list
+  end
+
+  def process_guess
+    guess = ''
+    until guess_valid?
+     guess = @player.collect_guess   
+    end
+  end
+  
+    def draw_word
     create_wordlist if @filtered_word_list.nil?
-    @filtered_word_list.sample
+    @word = @filtered_word_list.sample
   end
 
   def create_wordlist
     word_list = File.read('google-10000-english-no-swears.txt').split("\n")
     @filtered_word_list = word_list.each_with_object([]) do |word, filtered_list|
-      filtered_list << word if word.length.between?(5, 12)
+    filtered_list << word if word.length.between?(5, 12)
     end
+  end
+
+  def create_guessed_list
+    @guessed_letters = Array.new(@word.length, '_')
+  end
+
+  def update_guessed_list
+
   end
 end
 
