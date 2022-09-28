@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-
+require 'pry-byebug'
 # Class initializing the game and setting initial parameters
 class Hangman
   def initialize
@@ -24,8 +24,12 @@ class Computer
       prepare_variables
       @display.initial_message(@guess_number)
       @display.print_word(@guessed_letters)
-      process_guess while @guessed_letters.any?('_')
-      return unless @player.play_again?
+      while @guessed_letters.any?('_')
+        process_guess
+      end
+      unless @player.play_again?
+        return
+      end 
     end
   end
 
@@ -39,15 +43,19 @@ class Computer
     guess = ''
     loop do
       guess = @player.collect_guess
-      return if guess_valid?(guess)
-
+      if guess_valid?(guess)
+        return
+      end
       @display.invalid_guess_message
     end
     check_guess(guess)
   end
 
   def draw_word
-    create_wordlist if @filtered_word_list.nil?
+     
+    if @filtered_word_list.nil?
+      create_wordlist
+    end
     @word = @filtered_word_list.sample
   end
 
@@ -64,18 +72,18 @@ class Computer
     @guessed_letters = Array.new(@word.length, '_')
   end
 
-  def update_guessed_list; end
-
   def check_guess(guess)
-    unless @word.contain?(guess) do
+    puts 'g'
+    unless @word.contain?(guess)
       @display.no_character_message
       return
     end
     @guessed_letters.each_index do |index|
-      @guessed_letters[index] = guess if @word[index] == guess
+      if @word[index] == guess  
+        @guessed_letters[index] = guess 
+      end
     end
     @display.print_word(@guessed_letters)
-    end
   end
 
   def guess_valid?(guess)
