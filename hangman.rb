@@ -82,6 +82,14 @@ class Display
     def play_again_message
         puts 'The game ended. Type Y to play again, anthing else to exit.'
     end
+
+    def collect_guess_message
+        puts 'Enter your guess and press enter.'
+    end
+
+    def invalid_guess_message
+        puts 'Guess invalid. Enter it again.'
+    end
 end
 
 # Class handling all input from the player
