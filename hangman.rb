@@ -22,7 +22,7 @@ class Computer
     loop do
         prepare_variables
         @display.initial_message(@guess_number)
-        until @guessed_letters.any?('_')
+        while @guessed_letters.any?('_')
             process_guess
         end  
         return unless @player.play_again?
