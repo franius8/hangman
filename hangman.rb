@@ -12,16 +12,17 @@ end
 
 # Class handling all backend operations
 class Computer
-    def initialize(guess_number)
+  def initialize(guess_number)
     @guess_number = guess_number
     @display = Display.new
     @player = Player.new(@display)
-    end
+  end
   
-    def play_game
+  def play_game
     loop do
         prepare_variables
         @display.initial_message(@guess_number)
+        @display.print_word
         while @guessed_letters.any?('_')
             process_guess
         end  
@@ -45,15 +46,15 @@ class Computer
     end
   end
   
-    def draw_word
+def draw_word
     create_wordlist if @filtered_word_list.nil?
     @word = @filtered_word_list.sample
-  end
+end
 
   def create_wordlist
     word_list = File.read('google-10000-english-no-swears.txt').split("\n")
     @filtered_word_list = word_list.each_with_object([]) do |word, filtered_list|
-    filtered_list << word if word.length.between?(5, 12)
+      filtered_list << word if word.length.between?(5, 12)
     end
   end
 
@@ -122,7 +123,7 @@ class Player
 
     def play_again?
         @display.play_again_message
-        return true if gets.chomp.upcase == 'Y' 
+        return true if gets.chomp.upcase == 'Y' end
     end
 
     def collect_guess
@@ -130,3 +131,5 @@ class Player
         gets.chomp
     end
 end
+
+Hangman.new
