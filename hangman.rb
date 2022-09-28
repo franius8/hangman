@@ -4,7 +4,7 @@ require 'pry-byebug'
 # Class initializing the game and setting initial parameters
 class Hangman
   def initialize
-    @guess_number = 5
+    @guess_number = 10
 
     @computer = Computer.new(@guess_number)
 
@@ -33,6 +33,7 @@ class Computer
   def prepare_variables
     @word = WordDrawer.new.draw_word
     create_guessed_list
+    @previous_guesses = []
   end
 
   def process_guess
@@ -55,15 +56,26 @@ class Computer
     @guessed_letters = Array.new(@word.length, '_')
   end
 
-  def check_guess(guess)
-    unless @word.include?(guess)
-      @display.no_character_message
-      return
-    end
+  def update_guessed_list(guess)
     @guessed_letters.each_index do |index|
       @guessed_letters[index] = guess if @word[index] == guess
     end
-    @display.print_word(@guessed_letters)
+  end
+
+  def check_guess(guess)
+    if @word.include?(guess)
+      update_guessed_list(guess)
+      @display.print_word(@guessed_letters)
+    else
+      @display.no_character_message
+    end
+    finalize_guess(guess)
+  end
+
+  def finalize_guess(guess)
+    @previous_guesses << guess
+    @guess_number -= 1
+    @display.message_after_guess(@guess_number, @previous_guesses)
   end
 
   def guess_valid?(guess)
@@ -98,6 +110,10 @@ class Display
   def no_character_message
     puts 'This character is not present in the word!'
   end
+
+  def message_after_guess(guess_number, previous_guesses)
+    puts "You have #{guess_number} guesses left. Your previous guesses are #{previous_guesses.join(' ')}"
+  end
 end
 
 # Class handling all input from the player
@@ -113,7 +129,7 @@ class Player
 
   def collect_guess
     @display.collect_guess_message
-    gets.chomp
+    gets.chomp.downcase
   end
 end
 
