@@ -38,3 +38,23 @@ class Display
         puts 'The game ended. Type Y to play again, anthing else to exit.'
     end
 end
+
+class Player
+    def initialize(display)
+        @display = display
+    end
+
+    def collect_guess
+    
+    end
+
+    def play_again?
+        @display.play_again_message
+        return true if gets.chomp.upcase == 'Y' 
+    end
+
+    def collect_guess
+        @display.collect_guess_message
+        gets.chomp
+    end
+end
