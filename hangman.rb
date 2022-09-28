@@ -1,3 +1,4 @@
+# Class initializing the game and setting initial parameters
 class Hangman
   def initialize
     @guess_number = 5
@@ -9,6 +10,7 @@ class Hangman
   end
 end
 
+# Class handling all backend operations
 class Computer
     def initialize(guess_number)
     @guess_number = guess_number
@@ -61,6 +63,7 @@ class Computer
   end
 end
 
+# Class handling all messages to the player
 class Display
     def initial_message(guess_number)
         puts 'Welcome to Hangman!'
@@ -77,6 +80,7 @@ class Display
     end
 end
 
+# Class handling all input from the player
 class Player
     def initialize(display)
         @display = display
