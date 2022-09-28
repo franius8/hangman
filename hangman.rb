@@ -61,6 +61,10 @@ class Computer
   def update_guessed_list
 
   end
+
+  def guess_valid?(guess)
+    guess.length == 1 && guess.downcase.ord.between?(97, 122)
+  end
 end
 
 # Class handling all messages to the player
