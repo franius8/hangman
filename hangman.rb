@@ -23,7 +23,7 @@ class Computer
     loop do
       prepare_variables
       @display.initial_message(@guess_number)
-      @display.print_word
+      @display.print_word(@guessed_letters)
       process_guess while @guessed_letters.any?('_')
       return unless @player.play_again?
     end
@@ -54,7 +54,9 @@ class Computer
   def create_wordlist
     word_list = File.read('google-10000-english-no-swears.txt').split("\n")
     @filtered_word_list = word_list.each_with_object([]) do |word, filtered_list|
-      filtered_list << word if word.length.between?(5, 12)
+      if word.length.between?(5, 12)
+        filtered_list << word
+      end
     end
   end
 
@@ -69,58 +71,56 @@ class Computer
       @display.no_character_message
       return
     end
-      @guessed_letters.each_index do |index|
-        @guessed_letters[index] = guess if @word[index] == guess
-      end
-      @display.print_word(@guessed_letters)
+    @guessed_letters.each_index do |index|
+      @guessed_letters[index] = guess if @word[index] == guess
     end
-
-    def guess_valid?(guess)
-      guess.length == 1 && guess.downcase.ord.between?(97, 122)
+    @display.print_word(@guessed_letters)
     end
   end
 
-  # Class handling all messages to the player
-  class Display
-    def initial_message(guess_number)
-      puts 'Welcome to Hangman!'
-      puts 'The computer will now draw a word between 5 and 12 characters.'
-      puts "You will have #{guess_number} guesses."
-    end
+  def guess_valid?(guess)
+    guess.length == 1 && guess.downcase.ord.between?(97, 122)
+  end
+end
 
-    def print_word(guessed_letters)
-      puts "The word is currently: #{guessed_letters.join(' ')}"
-    end
-
-    def play_again_message
-      puts 'The game ended. Type Y to play again, anthing else to exit.'
-    end
-
-    def collect_guess_message
-      puts 'Enter your guess and press enter.'
-    end
-
-    def invalid_guess_message
-      puts 'Guess invalid. Enter it again.'
-    end
-
-    def no_character_message
-      puts 'This character is not present in the word!'
-    end
+# Class handling all messages to the player
+class Display
+  def initial_message(guess_number)
+    puts 'Welcome to Hangman!'
+    puts 'The computer will now draw a word between 5 and 12 characters.'
+    puts "You will have #{guess_number} guesses."
   end
 
-  # Class handling all input from the player
-  class Player
-    def initialize(display)
-      @display = display
-    end
+  def print_word(guessed_letters)
+    puts "The word is currently: #{guessed_letters.join(' ')}"
+  end
 
-    def collect_guess; end
+  def play_again_message
+    puts 'The game ended. Type Y to play again, anthing else to exit.'
+  end
 
-    def play_again?
-      @display.play_again_message
-      return true if gets.chomp.upcase == 'Y'
-    end
+  def collect_guess_message
+    puts 'Enter your guess and press enter.'
+  end
+
+  def invalid_guess_message
+    puts 'Guess invalid. Enter it again.'
+  end
+
+  def no_character_message
+    puts 'This character is not present in the word!'
+  end
+end
+
+# Class handling all input from the player
+class Player
+  def initialize(display)
+    @display = display
+  end
+
+  def play_again?
+    @display.play_again_message
+    return true if gets.chomp.upcase == 'Y'
   end
 
   def collect_guess
