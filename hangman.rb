@@ -37,12 +37,10 @@ class Computer
   end
 
   def process_guess
-    guess = ''
-    loop do
-      guess = @player.collect_guess
-      return if guess_valid?(guess)
-
+    guess = @player.collect_guess
+    unless guess_valid?(guess)
       @display.invalid_guess_message
+      return
     end
     check_guess(guess)
   end
@@ -64,8 +62,7 @@ class Computer
   end
 
   def check_guess(guess)
-    puts 'g'
-    unless @word.contain?(guess)
+    unless @word.include?(guess)
       @display.no_character_message
       return
     end
