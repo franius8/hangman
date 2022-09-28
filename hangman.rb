@@ -64,6 +64,17 @@ class Computer
 
   end
 
+  def check_guess(guess)
+    unless @word.contain?(guess) do
+        @display.no_character_message
+        return
+    end
+    @guessed_letters.each_index do |index|
+        if @word[index] == guess then @guessed_letters[index] = guess end
+    end
+    @display.print_word(@guessed_letters)
+  end
+
   def guess_valid?(guess)
     guess.length == 1 && guess.downcase.ord.between?(97, 122)
   end
