@@ -103,6 +103,10 @@ class Display
     def invalid_guess_message
         puts 'Guess invalid. Enter it again.'
     end
+
+    def no_character_message
+        puts 'This character is not present in the word!'
+    end
 end
 
 # Class handling all input from the player
