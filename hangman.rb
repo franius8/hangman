@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'pry-byebug'
 # Class initializing the game and setting initial parameters
 class Hangman
@@ -24,12 +25,8 @@ class Computer
       prepare_variables
       @display.initial_message(@guess_number)
       @display.print_word(@guessed_letters)
-      while @guessed_letters.any?('_')
-        process_guess
-      end
-      unless @player.play_again?
-        return
-      end 
+      process_guess while @guessed_letters.any?('_')
+      return unless @player.play_again?
     end
   end
 
@@ -43,28 +40,22 @@ class Computer
     guess = ''
     loop do
       guess = @player.collect_guess
-      if guess_valid?(guess)
-        return
-      end
+      return if guess_valid?(guess)
+
       @display.invalid_guess_message
     end
     check_guess(guess)
   end
 
   def draw_word
-     
-    if @filtered_word_list.nil?
-      create_wordlist
-    end
+    create_wordlist if @filtered_word_list.nil?
     @word = @filtered_word_list.sample
   end
 
   def create_wordlist
     word_list = File.read('google-10000-english-no-swears.txt').split("\n")
     @filtered_word_list = word_list.each_with_object([]) do |word, filtered_list|
-      if word.length.between?(5, 12)
-        filtered_list << word
-      end
+      filtered_list << word if word.length.between?(5, 12)
     end
   end
 
@@ -79,9 +70,7 @@ class Computer
       return
     end
     @guessed_letters.each_index do |index|
-      if @word[index] == guess  
-        @guessed_letters[index] = guess 
-      end
+      @guessed_letters[index] = guess if @word[index] == guess
     end
     @display.print_word(@guessed_letters)
   end
