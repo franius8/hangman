@@ -5,8 +5,10 @@ require 'pry-byebug'
 class Hangman
   def initialize
     @guess_number = 10
-
-    @computer = Computer.new(@guess_number)
+    @display = Display.new
+    @display.initial_message(@guess_number)
+    @display.load_saved_game_message
+    @computer = Computer.new(@guess_number, @display)
 
     @computer.play_game
   end
@@ -14,10 +16,11 @@ end
 
 # Class handling all backend operations during the game
 class Computer
-  def initialize(guess_number)
+  def initialize(guess_number, display)
     @guess_number = guess_number
-    @display = Display.new
+    @display = display
     @player = Player.new(@display)
+    @save_load = SaveLoad.new
   end
 
   def play_game
@@ -37,6 +40,7 @@ class Computer
 
   def process_guess
     guess = @player.collect_guess
+    @save_load.save(@word, @guess_number, @guessed_letters, @previous_guesses, @player) if guess == 'save'
     unless guess_valid?(guess)
       @display.invalid_guess_message
       return
@@ -91,6 +95,10 @@ end
 
 # Class handling all messages to the player
 class Display
+  def load_saved_game_message
+    puts 'Do you want to load a saved game? Type Y to load, anything else to play a new game.'
+  end
+
   def initial_message(guess_number)
     puts 'Welcome to Hangman!'
     puts 'The computer will now draw a word between 5 and 12 characters.'
@@ -163,6 +171,14 @@ class WordDrawer
 
   def draw_word
     @filtered_word_list.sample
+  end
+end
+
+# Class for saving and loading the game. 
+class SaveLoad
+  def save(word, guess_number, guessed_letters, previous_guesses, player)
+   @savefile_name = player.collect_savefile_name
+   @game_data = [word, guess_number, guessed_letter, previous_guesses, player]
   end
 end
 
