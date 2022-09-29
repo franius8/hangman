@@ -39,6 +39,8 @@ class Computer
     play_game
   end
 
+  private
+
   def play_game
     loop do
       prepare_variables
@@ -113,7 +115,7 @@ end
 # Class handling all messages to the player
 class Display
   def load_saved_game_message
-    puts 'Do you want to load a saved game? Type Y to load, anything else to play a new game.'
+    print 'Do you want to load a saved game? Type Y to load, anything else to play a new game: '
   end
 
   def initial_message(guess_number)
@@ -121,7 +123,7 @@ class Display
     puts 'Welcome to Hangman!'
     puts 'The computer will now draw a word between 5 and 12 characters.'
     puts "You may enter up to #{guess_number} incorrect guesses."
-    puts 'Type "save" when asked to enter your guess to save the game.'
+    puts 'Type "save" instead of enterimg your guess to save the game.'
     puts '--------------------------------------------------------------'
   end
 
@@ -130,11 +132,11 @@ class Display
   end
 
   def play_again_message
-    puts 'The game ended. Type Y to play again, anthing else to exit.'
+    print 'The game ended. Type Y to play again, anthing else to exit: '
   end
 
   def collect_guess_message
-    puts 'Enter your guess and press enter.'
+    print 'Enter your guess: '
   end
 
   def invalid_guess_message
@@ -163,7 +165,7 @@ class Display
   end
 
   def collect_savefile_name_message
-    puts 'Enter the name of your save. Only letters are allowed up to 12 characters (case insensitive)'
+    print 'Enter the name of your save. Only letters are allowed up to 12 characters (case insensitive): '
   end
 
   def succesful_save_message
@@ -175,7 +177,7 @@ class Display
   end
 
   def collect_loadfile_name_message
-    puts 'Enter the name of the save to load (case insensitive).'
+    print 'Enter the name of the save to load (case insensitive): '
   end
 end
 
