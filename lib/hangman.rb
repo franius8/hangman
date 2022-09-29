@@ -29,6 +29,8 @@ class Computer
   end
 
   def continue_saved_game(game_data, player, display)
+    return Hangman.new if game_data.nil?
+
     @display = display
     @player = player
     @word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number = game_data
@@ -179,6 +181,10 @@ class Display
   def collect_loadfile_name_message
     print 'Enter the name of the save to load (case insensitive): '
   end
+
+  def no_directory_message
+    puts 'No saves directory found!'
+  end
 end
 
 # Class handling all input from the player
@@ -266,6 +272,10 @@ class SaveLoad
   def load(player, display)
     @player = player
     @display = display
+    unless File.exist?('saves')
+      @display.no_directory_message
+      return nil
+    end
     @loadfile_name = @player.collect_loadfile_name
     prepare_loaded_data
     @game_data
