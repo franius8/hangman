@@ -23,9 +23,8 @@ class Computer
   def play_game
     loop do
       prepare_variables
-      @display.initial_message(@guess_number)
       @display.print_word(@guessed_letters)
-      process_guess while @guessed_letters.any?('_')
+      process_guess while @guessed_letters.any?('_') && @guess_number.positive?
       return unless @player.play_again?
     end
   end
@@ -65,17 +64,24 @@ class Computer
   def check_guess(guess)
     if @word.include?(guess)
       update_guessed_list(guess)
-      @display.print_word(@guessed_letters)
     else
       @display.no_character_message
+      finalize_guess(guess)
     end
-    finalize_guess(guess)
+    @display.print_word(@guessed_letters) unless @guess_number.zero?
+    if @guessed_letters.none?('_')
+      @display.won_game_message(@guess_number)
+    end
   end
 
   def finalize_guess(guess)
     @previous_guesses << guess
     @guess_number -= 1
-    @display.message_after_guess(@guess_number, @previous_guesses)
+    if @guess_number.zero?
+      @display.lost_game_message(@word)
+    else
+      @display.message_after_guess(@guess_number, @previous_guesses)
+    end
   end
 
   def guess_valid?(guess)
@@ -88,7 +94,7 @@ class Display
   def initial_message(guess_number)
     puts 'Welcome to Hangman!'
     puts 'The computer will now draw a word between 5 and 12 characters.'
-    puts "You will have #{guess_number} guesses."
+    puts "You may enter up to #{guess_number} incorrect guesses."
   end
 
   def print_word(guessed_letters)
@@ -112,7 +118,20 @@ class Display
   end
 
   def message_after_guess(guess_number, previous_guesses)
-    puts "You have #{guess_number} guesses left. Your previous guesses are #{previous_guesses.join(' ')}"
+    if guess_number == 1
+      guess_form = 'guess'
+    else
+      guess_form = 'guesses'
+    end
+    puts "You have #{guess_number} #{guess_form} left. Your previous guesses are #{previous_guesses.join(' ')}"
+  end
+
+  def lost_game_message(word)
+    puts "You ran out of guesses! The word was '#{word}'"
+  end
+
+  def won_game_message(guess_number)
+    puts "You correctly guessed the word with #{guess_number} guesses remaining! Congrats!"
   end
 end
 
