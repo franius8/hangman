@@ -40,7 +40,8 @@ class Computer
 
   def process_guess
     guess = @player.collect_guess
-    @save_load.save(@word, @guess_number, @guessed_letters, @previous_guesses, @player) if guess == 'save'
+    @game_data = [@word, @guess_number, @guessed_letters, @previous_guesses, @player, @display]
+    @save_load.save(@game_data) if guess == 'save'
     unless guess_valid?(guess)
       @display.invalid_guess_message
       return
@@ -141,6 +142,14 @@ class Display
   def won_game_message(guess_number)
     puts "You correctly guessed the word with #{guess_number} guesses remaining! Congrats!"
   end
+
+  def collect_savefile_name_message
+    puts 'Enter the name of your save. Only letters are allowed up to 12 characters'
+  end
+
+  def incorrect_savefile_name_message
+    puts 'Incorrect save name. Enter it again.'
+  end
 end
 
 # Class handling all input from the player
@@ -156,6 +165,11 @@ class Player
 
   def collect_guess
     @display.collect_guess_message
+    gets.chomp.downcase
+  end
+
+  def collect_savefile_name
+    @display.collect_savefile_name_message
     gets.chomp.downcase
   end
 end
@@ -174,11 +188,38 @@ class WordDrawer
   end
 end
 
-# Class for saving and loading the game. 
+# Class for saving and loading the game.
 class SaveLoad
-  def save(word, guess_number, guessed_letters, previous_guesses, player)
-   @savefile_name = player.collect_savefile_name
-   @game_data = [word, guess_number, guessed_letter, previous_guesses, player]
+
+  def save(game_data)
+    @game_data = game_data
+    @player = game_data[4]
+    @display = game_data[5]
+    make_save_dir
+    @savefile_name = collect_and_check_savefile_name
+    create_savefile
+    exit(true)
+  end
+
+  def collect_and_check_savefile_name
+    loop do
+      savefile_name = @player.collect_savefile_name
+      return savefile_name if savefile_name_valid?(savefile_name)
+
+      @display.incorrect_savefile_name_message
+    end
+  end
+
+  def savefile_name_valid?(savefile_name)
+    savefile_name.split('').all? { |letter| letter.ord.between?(97, 122) }
+  end
+
+  def make_save_dir
+    Dir.mkdir('saves') unless File.exist?('saves')
+  end
+
+  def create_savefile
+    File.open("saves/#{@savefile_name}.txt", 'w') { |file| file.write(@game_data) }
   end
 end
 
