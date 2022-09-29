@@ -249,7 +249,7 @@ class SaveLoad
   end
 
   def savefile_name_valid?(savefile_name)
-    savefile_name.split('').all? { |letter| letter.ord.between?(97, 122) }
+    savefile_name.split('').all? { |letter| letter.ord.between?(97, 122) } && savefile_name.length < 13
   end
 
   def make_save_dir
