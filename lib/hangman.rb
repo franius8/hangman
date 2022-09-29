@@ -7,13 +7,23 @@ class Hangman
     @display = Display.new
     @player = Player.new(@display)
     if @player.continue_saved?
-      @game_data = SaveLoad.new.load(@player, @display)
-      Computer.new.continue_saved_game(@game_data, @player, @display)
+      continue_saved
     else
-      @display.initial_message(@guess_number)
-      @computer = Computer.new
-      @computer.initialize_game(@guess_number, @display, @player)
+      initialize_new
     end
+  end
+
+  private
+
+  def continue_saved
+    @game_data = SaveLoad.new.load(@player, @display)
+    Computer.new.continue_saved_game(@game_data, @player, @display)
+  end
+
+  def initialize_new
+    @display.initial_message(@guess_number)
+    @computer = Computer.new
+    @computer.initialize_game(@guess_number, @display, @player)
   end
 end
 
