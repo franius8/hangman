@@ -9,7 +9,7 @@ class Hangman
     @player = Player.new(@display)
     if @player.continue_saved?
       @game_data = SaveLoad.new.load(@player, @display)
-      Computer.new.continue_saved_game(@game_data)
+      Computer.new.continue_saved_game(@game_data, @player, @display)
     else
       @display.initial_message(@guess_number)
       @computer = Computer.new
@@ -29,9 +29,12 @@ class Computer
     play_game
   end
 
-  def continue_saved_game(game_data)
+  def continue_saved_game(game_data, player, display)
+    @display = display
+    @player = player
     @word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number = game_data
     @save_load = SaveLoad.new
+    @display.message_after_guess(@guess_number, @previous_guesses)
     @display.print_word(@guessed_letters)
     process_guess while @guessed_letters.any?('_') && @guess_number.positive?
     play_game
@@ -163,6 +166,10 @@ class Display
     puts 'Enter the name of your save. Only letters are allowed up to 12 characters (case insensitive)'
   end
 
+  def succesful_save_message
+    puts 'Game saved succesfully.'
+  end
+
   def incorrect_savefile_name_message
     puts 'Incorrect save name. Enter it again.'
   end
@@ -248,17 +255,26 @@ class SaveLoad
   end
 
   def create_savefile
-    @game_data[2].join('^')
+    @game_data[2] = @game_data[2].join('^')
+    @game_data[3] = @game_data[3].join('^')
     File.open("saves/#{@savefile_name}.txt", 'w') { |file| file.write(@game_data.join('*')) }
+    @display.succesful_save_message
   end
 
   def load(player, display)
     @player = player
     @display = display
     @loadfile_name = @player.collect_loadfile_name
-    @game_data = File.open("saves/#{@loadfile_name}.txt", 'r').read.split('*')
-    @game_data[2] = @game_data[2].split('^')
+    prepare_loaded_data
     @game_data
+  end
+
+  def prepare_loaded_data
+    @game_data = File.open("saves/#{@loadfile_name}.txt", 'r').read.split('*')
+    @game_data[1] = @game_data[1].to_i
+    @game_data[2] = @game_data[2].split('^')
+    @game_data[3] = @game_data[3].split('^')
+    @game_data[4] = @game_data[4].to_i
   end
 end
 
