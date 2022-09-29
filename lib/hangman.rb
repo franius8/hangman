@@ -198,7 +198,11 @@ class Display
   end
 
   def no_directory_message
-    puts 'No saves directory found!'
+    puts 'Saves directory not found or empty!'
+  end
+
+  def no_file_message
+    puts 'No save found!'
   end
 end
 
@@ -290,13 +294,22 @@ class SaveLoad
   def load(player, display)
     @player = player
     @display = display
-    unless File.exist?('saves')
+    unless File.exist?('saves') && !Dir.empty?('saves')
       @display.no_directory_message
       return nil
     end
-    @loadfile_name = @player.collect_loadfile_name
+    @loadfile_name = collect_loadfile_name
     prepare_loaded_data
     @game_data
+  end
+
+  def collect_loadfile_name
+    loop do
+      loadfile_name = @player.collect_loadfile_name
+      return loadfile_name if File.exist?(loadfile_name)
+
+      @display.no_file_message
+    end
   end
 
   def prepare_loaded_data
