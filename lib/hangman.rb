@@ -64,8 +64,9 @@ class Computer
     guess = @player.collect_guess
     @game_data = [@word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number]
     @save_load.save(@game_data, @player, @display) if guess == 'save'
-    unless guess_valid?(guess)
-      @display.invalid_guess_message
+    unless guess_valid?(guess) && @previous_guesses.none?(guess)
+      @display.invalid_guess_message unless guess_valid?(guess)
+      @display.previously_guessed unless @previous_guesses.none?(guess)
       return
     end
     check_guess(guess)
@@ -143,6 +144,10 @@ class Display
 
   def invalid_guess_message
     puts 'Guess invalid. Enter it again.'
+  end
+
+  def previously_guessed
+    puts 'You already tried that.'
   end
 
   def no_character_message
