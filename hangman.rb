@@ -6,21 +6,35 @@ class Hangman
   def initialize
     @guess_number = 10
     @display = Display.new
-    @display.initial_message(@guess_number)
-    @display.load_saved_game_message
-    @computer = Computer.new(@guess_number, @display)
-
-    @computer.play_game
+    @player = Player.new(@display)
+    if @player.continue_saved?
+      @game_data = SaveLoad.new.load(@player, @display)
+      Computer.new.continue_saved_game(@game_data)
+    else
+      @display.initial_message(@guess_number)
+      @computer = Computer.new
+      @computer.initialize_game(@guess_number, @display, @player)
+    end
   end
 end
 
 # Class handling all backend operations during the game
 class Computer
-  def initialize(guess_number, display)
+  def initialize_game(guess_number, display, player)
     @guess_number = guess_number
+    @initial_guess_number = guess_number
     @display = display
-    @player = Player.new(@display)
+    @player = player
     @save_load = SaveLoad.new
+    play_game
+  end
+
+  def continue_saved_game(game_data)
+    @word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number = game_data
+    @save_load = SaveLoad.new
+    @display.print_word(@guessed_letters)
+    process_guess while @guessed_letters.any?('_') && @guess_number.positive?
+    play_game
   end
 
   def play_game
@@ -29,6 +43,8 @@ class Computer
       @display.print_word(@guessed_letters)
       process_guess while @guessed_letters.any?('_') && @guess_number.positive?
       return unless @player.play_again?
+
+      @guess_number = @initial_guess_number
     end
   end
 
@@ -40,8 +56,8 @@ class Computer
 
   def process_guess
     guess = @player.collect_guess
-    @game_data = [@word, @guess_number, @guessed_letters, @previous_guesses, @player, @display]
-    @save_load.save(@game_data) if guess == 'save'
+    @game_data = [@word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number]
+    @save_load.save(@game_data, @player, @display) if guess == 'save'
     unless guess_valid?(guess)
       @display.invalid_guess_message
       return
@@ -144,11 +160,15 @@ class Display
   end
 
   def collect_savefile_name_message
-    puts 'Enter the name of your save. Only letters are allowed up to 12 characters'
+    puts 'Enter the name of your save. Only letters are allowed up to 12 characters (case insensitive)'
   end
 
   def incorrect_savefile_name_message
     puts 'Incorrect save name. Enter it again.'
+  end
+
+  def collect_loadfile_name_message
+    puts 'Enter the name of the save to load (case insensitive).'
   end
 end
 
@@ -160,7 +180,12 @@ class Player
 
   def play_again?
     @display.play_again_message
-    return true if gets.chomp.upcase == 'Y'
+    return true if gets.chomp.downcase == 'y'
+  end
+
+  def continue_saved?
+    @display.load_saved_game_message
+    return true if gets.chomp.downcase == 'y'
   end
 
   def collect_guess
@@ -170,6 +195,11 @@ class Player
 
   def collect_savefile_name
     @display.collect_savefile_name_message
+    gets.chomp.downcase
+  end
+
+  def collect_loadfile_name
+    @display.collect_loadfile_name_message
     gets.chomp.downcase
   end
 end
@@ -190,11 +220,10 @@ end
 
 # Class for saving and loading the game.
 class SaveLoad
-
-  def save(game_data)
+  def save(game_data, player, display)
     @game_data = game_data
-    @player = game_data[4]
-    @display = game_data[5]
+    @player = player
+    @display = display
     make_save_dir
     @savefile_name = collect_and_check_savefile_name
     create_savefile
@@ -219,7 +248,17 @@ class SaveLoad
   end
 
   def create_savefile
-    File.open("saves/#{@savefile_name}.txt", 'w') { |file| file.write(@game_data) }
+    @game_data[2].join('^')
+    File.open("saves/#{@savefile_name}.txt", 'w') { |file| file.write(@game_data.join('*')) }
+  end
+
+  def load(player, display)
+    @player = player
+    @display = display
+    @loadfile_name = @player.collect_loadfile_name
+    @game_data = File.open("saves/#{@loadfile_name}.txt", 'r').read.split('*')
+    @game_data[2] = @game_data[2].split('^')
+    @game_data
   end
 end
 
