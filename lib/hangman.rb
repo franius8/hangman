@@ -120,9 +120,12 @@ class Display
   end
 
   def initial_message(guess_number)
+    puts '--------------------------------------------------------------'
     puts 'Welcome to Hangman!'
     puts 'The computer will now draw a word between 5 and 12 characters.'
     puts "You may enter up to #{guess_number} incorrect guesses."
+    puts 'Type "save" when asked to enter your guess to save the game.'
+    puts '--------------------------------------------------------------'
   end
 
   def print_word(guessed_letters)
