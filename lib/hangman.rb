@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
 # Class initializing the game and setting initial parameters
 class Hangman
   def initialize
@@ -93,9 +92,7 @@ class Computer
       finalize_guess(guess)
     end
     @display.print_word(@guessed_letters) unless @guess_number.zero?
-    if @guessed_letters.none?('_')
-      @display.won_game_message(@guess_number)
-    end
+    @display.won_game_message(@guess_number) if @guessed_letters.none?('_')
   end
 
   def finalize_guess(guess)
@@ -149,11 +146,11 @@ class Display
   end
 
   def message_after_guess(guess_number, previous_guesses)
-    if guess_number == 1
-      guess_form = 'guess'
-    else
-      guess_form = 'guesses'
-    end
+    guess_form = if guess_number == 1
+                   'guess'
+                 else
+                   'guesses'
+                 end
     puts "You have #{guess_number} #{guess_form} left. Your previous guesses are #{previous_guesses.join(' ')}"
   end
 
