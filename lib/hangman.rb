@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
 require_relative 'computer'
 require_relative 'display'
 require_relative 'player'
@@ -21,8 +23,8 @@ class Hangman
   private
 
   def continue_saved
-    @game_data = SaveLoad.new.load(@player, @display)
-    Computer.new.continue_saved_game(@game_data, @player, @display)
+    computer = SaveLoad.new.load(@player, @display)
+    computer.continue_saved_game(@player, @display)
   end
 
   def initialize_new
@@ -33,3 +35,4 @@ class Hangman
 end
 
 Hangman.new
+
