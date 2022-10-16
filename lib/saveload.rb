@@ -1,7 +1,6 @@
 # Class for saving and loading the game.
 class SaveLoad
-    def save(game_data, player, display, computer)
-      @game_data = game_data
+    def save(player, display, computer)
       @player = player
       @display = display
       @computer = computer
@@ -41,24 +40,17 @@ class SaveLoad
         return nil
       end
       @loadfile_name = collect_loadfile_name
-      File.open("saves/#{loadfile_name}.yml", 'r') do |file|
-        YAML.safe_load(file, permitted_classes: [Computer, Display, Player, Safeload], aliases: true)
+      File.open("saves/#{@loadfile_name}.yml", 'r') do |file|
+        YAML.safe_load(file, permitted_classes: [Computer, Display, Player, SaveLoad], aliases: true)
+      end
     end
   
     def collect_loadfile_name
       loop do
         loadfile_name = @player.collect_loadfile_name
-        return loadfile_name if File.exist?(loadfile_name)
+        return loadfile_name if File.exist?("saves/#{loadfile_name}.yml")
         
         @display.no_file_message
       end
-    end
-  
-    def prepare_loaded_data
-      @game_data = File.open("saves/#{@loadfile_name}.txt", 'r').read.split('*')
-      @game_data[1] = @game_data[1].to_i
-      @game_data[2] = @game_data[2].split('^')
-      @game_data[3] = @game_data[3].split('^')
-      @game_data[4] = @game_data[4].to_i
     end
   end

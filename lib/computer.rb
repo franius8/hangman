@@ -13,13 +13,9 @@ class Computer
       play_game
     end
   
-    def continue_saved_game(game_data, player, display)
-      return Hangman.new if game_data.nil?
-  
+    def continue_saved_game(player, display)  
       @display = display
       @player = player
-      @word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number = game_data
-      @save_load = SaveLoad.new
       @display.message_after_guess(@guess_number, @previous_guesses)
       @display.print_word(@guessed_letters)
       process_guess while @guessed_letters.any?('_') && @guess_number.positive?
@@ -47,8 +43,7 @@ class Computer
   
     def process_guess
       guess = @player.collect_guess
-      @game_data = [@word, @guess_number, @guessed_letters, @previous_guesses, @initial_guess_number]
-      @save_load.save(@game_data, @player, @display, self) if guess == 'save'
+      @save_load.save(@player, @display, self) if guess == 'save'
       unless guess_valid?(guess) && @previous_guesses.none?(guess)
         @display.invalid_guess_message unless guess_valid?(guess)
         @display.previously_guessed unless @previous_guesses.none?(guess)
