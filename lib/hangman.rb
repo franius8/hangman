@@ -35,3 +35,4 @@ class Hangman
 end
 
 Hangman.new
+
